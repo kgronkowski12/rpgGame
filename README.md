@@ -30,7 +30,7 @@ Gra będzie posiadać autorską grafikę pixel art robioną w pixelstudio. Muzyk
 
 Tablice wyników:
 
-Uzyskane punkty doświadczenia po śmierci bohatera zostaną zapisany w tablicy wyników, przechowywanej w zewnętrznym pliku.
+Uzyskane punkty doświadczenia po śmierci bohatera zostaną zapisany w tablicy wyników, przechowywanej w zewnętrznym pliku. Potem można rozpocząć grę na nowo.
 
 
 Projekt tworzony przez:
