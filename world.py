@@ -5,73 +5,104 @@ from player import Player
 from debug import debug
 from post import *
 from random import choice
+from weapon import Weapon
+from ui import UI
+from enemy import Enemy
 
 class World:
     def __init__(self):
-        #tło
         self.display_surface = pygame.display.get_surface()
-        #grupy sprite'ów
-        self.visable_sprites = SortByY()
+        self.visable_sprites = YSortCameraGroup()
         self.obstacle_sprites = pygame.sprite.Group()
-        self.create_world()
+        self.current_attack = None
+        self.create_map()
+        self.ui = UI()
 
-
-    def create_world(self):
+    def create_map(self):
         layouts = {
             'world_wall': csv_import('../map/map__Wall.csv'),
             'flowers': csv_import('../map/map__Flowers.csv'),
-            'object': csv_import('../map/map__Objects.csv')
+            'object': csv_import('../map/map__Objects.csv'),
+            'entities': csv_import('../map/map__Characters.csv')
+
         }
+
         graphics = {
             'flowers': import_folder('../img/flowers'),
             'objects': import_folder('../img/objects')
         }
 
-        #style = world_wall, layout = plik csv
+        #style = world_wall, layout = csv file
         for style,layout in layouts.items():
-            for index_OF_row,row in enumerate(layout):
-                for index_OF_column, column in enumerate(row):
-                    if column != '-1': #ma rysować granice tylko w polach, które nie są puste (-1), tutaj wartość 395 oznacza granicę
+            for row_index,row in enumerate(layout):
+                for col_index, col in enumerate(row):
+                    if col != '-1': #ma rysować granice tylko w polach, które nie są puste (-1), tutaj wartość 395 oznacza granicę
                         #bez tego 'if' cała mapa zostaje uznana za granicę nie do przejścia i gracz automatycznie zostaje wyrzucony z niej
-                        x = index_OF_column * TILESIZE
-                        y = index_OF_row * TILESIZE
+                        x = col_index * TILESIZE
+                        y = row_index * TILESIZE
                         if style == 'world_wall':
                             Tile((x,y),[self.obstacle_sprites],'invisible') #self.visable_sprites jako 1 argument sprawi ze granice będą widoczne jako czarne pola
                         if style == 'flowers':
                             random_flowers_image = choice(graphics['flowers'])
                             Tile((x,y),[self.visable_sprites,self.obstacle_sprites],'flowers',random_flowers_image)
                         if style == 'object':
-                            #tworzymy plytke typu obiekt
-                            surf = graphics['objects'][int(column)]
+                            #create an object tile
+                            surf = graphics['objects'][int(col)]
                             Tile((x,y),[self.visable_sprites,self.obstacle_sprites],'object',surf)
 
-        self.player = Player((2000,1430),[self.visable_sprites],self.obstacle_sprites)
-#player idzie do visable sprites a potem dostaje info o obstacle sprites tylko do kolizji
+                        if style == 'entities':#1 skeletor,2 grzybol, 3 pso niedzwiedz
+                            if col == '0':
+                                self.player = Player(
+                                                    (x,y),
+                                                     [self.visable_sprites],
+                                                     self.obstacle_sprites,
+                                                     self.create_attack,
+                                                     self.destroy_attack,
+                                                     self.create_magic) 
+                            
+                            else:
+                                Enemy('monster',(x,y),[self.visable_sprites])
+                                #create attack bez () bo nie -> call a pass function
+                                #player idzie do visable sprites a potem dostaje info o obstacle sprites tylko do kolizji
+
+
+
+    def create_attack(self):
+        self.current_attack = Weapon(self.player,[self.visable_sprites])
+
+
+    def create_magic(self,style,strength,cost):
+        print(style)
+        print(strength)
+        print(cost)
+
+
+    def destroy_attack(self):
+        if self.current_attack:
+            self.current_attack.kill()
+        self.current_attack = None
 
     def run(self):
-        #update'ujemy sprite'y co klatkę
         self.visable_sprites.custom_draw(self.player)
         self.visable_sprites.update()
-        debug(self.player.status)
+        self.ui.display(self.player)
 
-class SortByY(pygame.sprite.Group): #będziemy rysować według współrzędnych Y, więc najwyżej położone sprite'y będą na najniższej warstwie (jak w np. photoshopie)
+class YSortCameraGroup(pygame.sprite.Group):
     def __init__(self):
+
         super().__init__()
         self.display_surface = pygame.display.get_surface()
-        self.width_center = self.display_surface.get_size()[0]//2 #1 atrybut surface czyli szerokosc dzielimy na pol zeby gracz byl zawsze w centrum kamery
-        self.height_center = self.display_surface.get_size()[1]//2
-        self.shift = pygame.math.Vector2() #vector2 = 2 floaty
-        #tworzymy podłogę
+        self.half_width = self.display_surface.get_size()[0]//2 #1 atrybut surface czyli szerokosc dzielimy na pol zeby gracz byl zawsze w centrum kamery
+        self.half_height = self.display_surface.get_size()[1]//2
+        self.offset = pygame.math.Vector2()
         self.floor_surf = pygame.image.load('../img/tiles/map.png').convert()
         self.floor_rect = self.floor_surf.get_rect(topleft = (0,0))
 
     def custom_draw(self,player):
-        self.shift.x = player.rect.centerx - self.width_center #jak bardzo gracz "oddalil" sie od centrum
-        self.shift.y = player.rect.centery - self.height_center
-        #rysujemy podloge
-        floor_shift_position = self.floor_rect.topleft - self.shift
-        self.display_surface.blit(self.floor_surf,floor_shift_position)
-
+        self.offset.x = player.rect.centerx - self.half_width #jak bardzo gracz "oddalil" sie od centrum
+        self.offset.y = player.rect.centery - self.half_height
+        floor_offset_pos = self.floor_rect.topleft - self.offset
+        self.display_surface.blit(self.floor_surf,floor_offset_pos)
         for sprite in sorted(self.sprites(),key = lambda sprite: sprite.rect.centery): #rysujemy według osi Y (więc najpierw rysujemy najwyższe i potem co raz niżej (im niżej tym "wyższa warstwa"))
-            shift_position = sprite.rect.topleft - self.shift #przesuniecie sprite'ow o wektor
-            self.display_surface.blit(sprite.image,shift_position) #rysowanie jednoczesnie w tej samej pozycji rectangle i obrazka
+            offset_pos = sprite.rect.topleft - self.offset #przesuniecie sprite'ow o wektor
+            self.display_surface.blit(sprite.image,offset_pos) #rysowanie jednoczesnie w tej samej pozycji rectangle i obrazka
