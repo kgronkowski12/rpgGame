@@ -32,3 +32,7 @@ class Entity(pygame.sprite.Sprite):
                         self.hitbox.bottom = sprite.rect.top
                     if self.direction.y < 0:
                         self.hitbox.top = sprite.rect.bottom
+    def wave_value(self):
+        value = sin(pygame.time.get_ticks())
+        if value >= 0: return 255 #pelna przezroczystosc
+        else: return 0
