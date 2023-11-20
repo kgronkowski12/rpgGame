@@ -3,13 +3,12 @@ from settings import *
 from post import import_folder
 from entity import Entity
 
-class Player(Entity):
+class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
     def __init__(self,pos,groups,obstacle_sprites,create_attack,destroy_attack,create_magic):
         super().__init__(groups)
         self.image = pygame.image.load('../img/test/player.png').convert_alpha()
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = self.rect.inflate(0,-26)
-
         self.import_player_assets()
         self.status = 'down'
         self.attacking = False
@@ -18,7 +17,7 @@ class Player(Entity):
         self.create_attack = create_attack
         self.obstacle_sprites = obstacle_sprites
 
-        #bron
+        #broń
         self.create_attack = create_attack
         self.destroy_attack = destroy_attack
         self.weapon_index = 0
@@ -45,6 +44,12 @@ class Player(Entity):
         self.exp = 123
         self.speed = self.stats['speed']
 
+
+        #timer obrażeń
+        self.vulnerable = True
+        self.hurt_time = None
+        self.invulnerability_duration = 500
+
     def import_player_assets(self):
         character_path = '../img/player/'
         self.animations = {'up': [],'down': [], 'left': [], 'right': [],
@@ -57,7 +62,6 @@ class Player(Entity):
     def input(self):
         if not self.attacking: #by nie mozna bylo zmienic kierunku w trakcie ataku
             keys = pygame.key.get_pressed()
-
             if keys[pygame.K_UP]:
                 self.direction.y =-1
                 self.status = 'up'
@@ -66,7 +70,6 @@ class Player(Entity):
                 self.status = 'down'
             else:
                 self.direction.y = 0
-
 
             if keys[pygame.K_RIGHT]:
                 self.direction.x =1
@@ -81,17 +84,13 @@ class Player(Entity):
                 self.attacking = True
                 self.attack_time = pygame.time.get_ticks() #zapisuje czas tylko ostatniego ataku
                 self.create_attack()
-
             if keys[pygame.K_LCTRL]:
                 self.attacking = True
                 self.attack_time = pygame.time.get_ticks()
                 style = list(magic_data.keys())[self.magic_index]
                 strength = list(magic_data.values())[self.magic_index]['strength'] +self.stats['magic']
                 cost = list(magic_data.values())[self.magic_index]['cost']
-
-
                 self.create_magic(style,strength,cost)
-
             if keys[pygame.K_q] and self.can_switch_weapon:
                 self.can_switch_weapon = False
                 self.weapon_switch_time = pygame.time.get_ticks()
@@ -137,7 +136,7 @@ class Player(Entity):
         current_time = pygame.time.get_ticks() #cały czas liczy czas
 
         if self.attacking:
-            if current_time - self.attack_time >= self.attack_cooldown:
+            if current_time - self.attack_time >= self.attack_cooldown + weapon_data[self.weapon]['cooldown']: #to po plusie mozna usunac
                 self.attacking = False
                 self.destroy_attack()
 
@@ -150,15 +149,31 @@ class Player(Entity):
             if current_time - self.magic_switch_time >= self.switch_duration_cooldown:
                 self.can_switch_magic = True
 
+        if not self.vulnerable:
+            if current_time - self.hurt_time >= self.invulnerability_duration:
+                self.vulnerable = True
+
     def animate(self):
         animation = self.animations[self.status]
 
         self.frame_index += self.animations_speed
         if self.frame_index >= len(animation):
             self.frame_index = 0
-
         self.image = animation[int(self.frame_index)] #int bo animation speed to float a python oczekuje intów
         self.rect = self.image.get_rect(center = self.hitbox.center)
+
+
+        if not self.vulnerable:
+            alpha = self.wave_value()
+            self.image.set_alpha(alpha)
+        else:
+            self.image.set_alpha(255)
+
+    def get_full_weapon_damage(self): #full obrazenia to staty bohatera + staty broni
+        base_damage = self.stats['attack']
+        weapon_damage = weapon_data[self.weapon]['damage'] #weapon_data w pliku settings
+        return base_damage + weapon_damage
+
 
     def update(self):
         self.input()
