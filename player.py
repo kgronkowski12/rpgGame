@@ -16,8 +16,6 @@ class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
         self.attack_time = None
         self.create_attack = create_attack
         self.obstacle_sprites = obstacle_sprites
-
-        #broń
         self.create_attack = create_attack
         self.destroy_attack = destroy_attack
         self.weapon_index = 0
@@ -39,9 +37,11 @@ class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
 
         #statystyki
         self.stats = {'health':100,'energy':60,'attack':10,'magic':4,"speed":6}
+        self.max_stats = {'health':300,'energy':140,'attack':20,'magic':10,"speed":10}
+        self.upgrade_cost = {'health':100,'energy':100,'attack':100,'magic':100,"speed": 100}
         self.health = self.stats['health'] *0.5
         self.energy = self.stats['energy'] *0.8
-        self.exp = 123
+        self.exp = 500
         self.speed = self.stats['speed']
 
 
@@ -70,7 +70,6 @@ class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
                 self.status = 'down'
             else:
                 self.direction.y = 0
-
             if keys[pygame.K_RIGHT]:
                 self.direction.x =1
                 self.status = 'right'
@@ -79,7 +78,6 @@ class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
                 self.status = 'left'
             else:
                 self.direction.x = 0
-
             if keys[pygame.K_SPACE]: #and not self.attacking: #po to by gracz nie atakował trzymając przycisk ORAZ by nie mógł atakować i uzywac magii jednoczesnie ORAZ by nie mogl ich uzywac w bardzooo krotkich odstepach czasu
                 self.attacking = True
                 self.attack_time = pygame.time.get_ticks() #zapisuje czas tylko ostatniego ataku
@@ -90,7 +88,10 @@ class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
                 style = list(magic_data.keys())[self.magic_index]
                 strength = list(magic_data.values())[self.magic_index]['strength'] +self.stats['magic']
                 cost = list(magic_data.values())[self.magic_index]['cost']
+
+
                 self.create_magic(style,strength,cost)
+
             if keys[pygame.K_q] and self.can_switch_weapon:
                 self.can_switch_weapon = False
                 self.weapon_switch_time = pygame.time.get_ticks()
@@ -118,7 +119,6 @@ class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
         if self.direction.x == 0 and self.direction.y == 0: #gracz się nie rusza
             if not 'idle' in self.status and not 'attack' in self.status: #sprawdzamy czy status nie posiada już idle w tytule bo inaczej ciągle będzie dodawać koncowke _idle do statusu wiec otrzymamy up_idle_idle_idle_idle
                 self.status = self.status + '_idle'
-
         if self.attacking:
             self.direction.x = 0
             self.direction.y = 0
@@ -155,14 +155,11 @@ class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
 
     def animate(self):
         animation = self.animations[self.status]
-
         self.frame_index += self.animations_speed
         if self.frame_index >= len(animation):
             self.frame_index = 0
-        self.image = animation[int(self.frame_index)] #int bo animation speed to float a python oczekuje intów
+        self.image = animation[int(self.frame_index)]
         self.rect = self.image.get_rect(center = self.hitbox.center)
-
-
         if not self.vulnerable:
             alpha = self.wave_value()
             self.image.set_alpha(alpha)
@@ -175,9 +172,21 @@ class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
         return base_damage + weapon_damage
 
 
+    def get_full_magic_damage(self):
+        base_damage = self.stats['magic']
+        spell_damage = magic_data[self.magic]['strength']
+        return base_damage + spell_damage
+
+    def energy_recovery(self):
+        if self.energy < self.stats['energy']:
+            self.energy += 0.01 * self.stats['magic']
+        else:
+            self.energy = self.stats['energy']
+
     def update(self):
         self.input()
         self.cooldowns()
         self.get_status()
         self.animate()
         self.move(self.speed)
+        self.energy_recovery()
