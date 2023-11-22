@@ -4,12 +4,13 @@ from settings import *
 from world import World
 
 class Game:
-    def __init__(self):
+    def __init__(self):          
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH,HEIGHT))
-        pygame.display.set_caption('Custom title') #tytuł okienka/procesu
+        pygame.display.set_caption('TEST TITLE')
         self.clock = pygame.time.Clock()
-        self.world = World()
+    
+        self.level = World()
 
     def run(self):
         while True:
@@ -17,9 +18,12 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit() #możliwość wyłączenia gry bez erroru
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_u:
+                        self.level.toggle_menu()
  
             self.screen.fill('black')
-            self.world.run()
+            self.level.run()
             pygame.display.update()
             self.clock.tick(FPS)
  
