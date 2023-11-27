@@ -3,15 +3,10 @@ import pygame
 class Weapon(pygame.sprite.Sprite):
     def __init__(self,player,groups):
         super().__init__(groups)
+        self.sprite_type = 'weapon'
         direction = player.status.split('_')[0] #chcemy się pozbyć stanów idle z listy stanów tak by dostać tylko kierunek
-
-
-        #grafika
         full_path = f'../img/weapons/{player.weapon}/{direction}.png'
         self.image = pygame.image.load(full_path).convert_alpha()
-        
-        
-        #położenie broni
         if direction == 'right':
             self.rect = self.image.get_rect(midleft = player.rect.midright + pygame.math.Vector2(0,20)) #dodajemy offset by broń była bliżej dloni
         elif direction == 'left':

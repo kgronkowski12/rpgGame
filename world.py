@@ -2,17 +2,19 @@ import pygame
 from settings import *
 from tile import Tile
 from player import Player
-from debug import debug
 from post import *
 from random import choice, randint
 from weapon import Weapon
 from ui import UI
 from enemy import Enemy
 from elements import AnimationPlayer
+from magic import MagicPlayer
+from upgrade import Upgrade
 
 class World:
     def __init__(self):
         self.display_surface = pygame.display.get_surface()
+        self.game_paused = False
         self.visable_sprites = YSortCameraGroup()
         self.obstacle_sprites = pygame.sprite.Group()
         self.current_attack = None
@@ -21,7 +23,11 @@ class World:
         #sprawdzamy kolizje miedzy attack a atackable
         self.create_map()
         self.ui = UI()
-        self.animation_player = AnimationPlayer()
+        self.upgrade = Upgrade(self.player)
+
+        #elementy
+        self.animation_player = AnimationPlayer() #klasa animation player bedzie odtwarzac klase particleeffect
+        self.magic_player = MagicPlayer(self.animation_player)
 
     def create_map(self):
         layouts = {
@@ -75,7 +81,8 @@ class World:
                                       [self.visable_sprites,self.attackable_sprites], #grupy 'sprite'ów' do jakich należą wrogowie
                                       self.obstacle_sprites,
                                       self.damage_player,
-                                      self.trigger_death_particles)
+                                      self.trigger_death_particles,
+                                      self.add_exp)
                                 #player idzie do visable sprites a potem dostaje info o obstacle sprites tylko do kolizji
 
 
@@ -85,9 +92,11 @@ class World:
 
 
     def create_magic(self,style,strength,cost):
-        print(style)
-        print(strength)
-        print(cost)
+        if style =='heal':
+            self.magic_player.heal(self.player,strength,cost,[self.visable_sprites])
+
+        if style == 'flame':
+            self.magic_player.flame(self.player,cost,[self.visable_sprites,self.attack_sprites])
 
 
     def destroy_attack(self):
@@ -105,7 +114,7 @@ class World:
                     for target_sprite in collision_sprites:
                         if target_sprite.sprite_type == 'flowers':
                             pos = target_sprite.rect.center #particles ida tam gdzie wczesniej byly kwiaty
-                            offset = pygame.math.Vector2(0,75) #lekko przenosimy particles, czy usunac???
+                            offset = pygame.math.Vector2(0,75)
                             for leaf in range(randint(3,6)):
                                 self.animation_player.create_grass_particles(pos-offset,[self.visable_sprites])
                             target_sprite.kill() #niszczymy kwiaty
@@ -119,6 +128,7 @@ class World:
             self.player.health -= amount
             self.player.vulnerable = False
             self.player.hurt_time = pygame.time.get_ticks()
+            #spawnujemy elementy
             self.animation_player.create_particles(attack_type,self.player.rect.center,[self.visable_sprites])
 
 
@@ -126,12 +136,23 @@ class World:
         self.animation_player.create_particles(particle_type,pos,self.visable_sprites)
 
 
+    def add_exp(self,amount):
+
+        self.player.exp += amount
+
+    def toggle_menu(self):
+        self.game_paused = not self.game_paused
+
+
     def run(self):
-        self.visable_sprites.custom_draw(self.player)
-        self.visable_sprites.update()
-        self.visable_sprites.enemy_update(self.player)
-        self.player_attack_logic()
+        self.visable_sprites.custom_draw(self.player) #zawsze rysujemy nasze widoczne sprite'y
         self.ui.display(self.player)
+        if self.game_paused:
+            self.upgrade.display()
+        else:
+            self.visable_sprites.update() #update'ujemy widoczne sprite tylko gdy gra NIE JEST zapauzowana
+            self.visable_sprites.enemy_update(self.player)
+            self.player_attack_logic()
 
 class YSortCameraGroup(pygame.sprite.Group):
     def __init__(self):
@@ -140,8 +161,6 @@ class YSortCameraGroup(pygame.sprite.Group):
         self.half_width = self.display_surface.get_size()[0]//2 #1 atrybut surface czyli szerokosc dzielimy na pol zeby gracz byl zawsze w centrum kamery
         self.half_height = self.display_surface.get_size()[1]//2
         self.offset = pygame.math.Vector2()
-
-        #creating the floor
         self.floor_surf = pygame.image.load('../img/tiles/map.png').convert()
         self.floor_rect = self.floor_surf.get_rect(topleft = (0,0))
 

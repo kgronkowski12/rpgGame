@@ -4,7 +4,7 @@ from entity import Entity
 from post import *
 
 class Enemy(Entity):
-    def __init__(self,monster_name,pos,groups,obstacle_sprites,damage_player,trigger_death_particles):
+    def __init__(self,monster_name,pos,groups,obstacle_sprites,damage_player,trigger_death_particles,add_exp):
         super().__init__(groups)
         self.sprite_type = 'enemy' #tak samo jak w tile a sam typ jest po to
         #aby mialy rozne wartosci i reakcje, np gracz atakuje wroga (traci zdrowie a potem umiera)
@@ -40,6 +40,7 @@ class Enemy(Entity):
         self.attack_cooldown = 400
         self.damage_player = damage_player
         self.trigger_death_particles = trigger_death_particles
+        self.add_exp = add_exp
 
         #timer niewidzialności
         #wrogowie bez tego umieraja po jednym ciosie poniewaz gra po prostu sprawdza
@@ -95,7 +96,7 @@ class Enemy(Entity):
         else:
             self.direction = pygame.math.Vector2() #gdy gracz wyjdzie z zasiegu wzroku wroga, zatrzyma się on odrazu w miejscu
 
-    def animate(self):
+    def animate(self): # prawie to samo co funcja animate w graczu
         animation = self.animations[self.status]
 
         self.frame_index += self.animations_speed
@@ -132,7 +133,7 @@ class Enemy(Entity):
             if attack_type == 'weapon':
                 self.health -= player.get_full_weapon_damage()
             else:
-                pass
+                self.health -= player.get_full_magic_damage()
             self.hit_time = pygame.time.get_ticks()
             self.vulnerable = False
 
@@ -140,11 +141,13 @@ class Enemy(Entity):
         if self.health <= 0:
             self.kill()
             self.trigger_death_particles(self.rect.center,self.monster_name)
+            self.add_exp(self.exp)
 
 
     def hit_reaction(self):
         if not self.vulnerable:
             self.direction *= -self.resistance 
+
 
 
     def update(self):
