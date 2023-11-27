@@ -2,7 +2,7 @@ from csv import reader
 from os import walk
 import pygame
 
-def csv_import(path):
+def import_csv_layout(path):
     world_csv = []
     with open(path) as level_csv:
         layout = reader(level_csv,delimiter = ',')
