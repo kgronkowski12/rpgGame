@@ -21,6 +21,12 @@ TEXT_COLOR = 'white'
 HEALTH_COLOR = '#800a01'
 ENERGY_COLOR = '#010a70'
 
+# menu ulepszeń
+TEXT_COLOR_SELECTED = '#111111'
+BAR_COLOR = '#EEEEEE'
+BAR_COLOR_SELECTED = '#111111'
+UPGRADE_BG_COLOR_SELECTED = '#EEEEEE'
+
 #bronie
 weapon_data = {
 	'sword': {'cooldown': 100, 'damage': 15,'graphic':'../img/weapons/sword/full.png'},
