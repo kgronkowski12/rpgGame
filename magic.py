@@ -17,7 +17,7 @@ class MagicPlayer:
 
     def flame(self,player,cost,groups):
         if player.energy >= cost:
-            #bierzemy listę stanow gracza i dzielimy je jesli jest right idle np, i patrzymy tylko na 1 rzecz (kierunek)
+            #bierzem listę stanow gracza i dzielimy je jesli jest right idle np, i patrzymy tylko na 1 rzecz (kierunek)
             if player.status.split('_')[0] == 'right':
                 direction = pygame.math.Vector2(1,0)
             elif player.status.split('_')[0] == 'left':
@@ -28,14 +28,14 @@ class MagicPlayer:
                 direction = pygame.math.Vector2(0,1)
 
             for i in range(1,6):
-                if direction.x:
+                if direction.x: #horizontal
                     offset_x= (direction.x*i)* TILESIZE 
                     #rysujemy każdy kolejny sprite obok wczesniejszego (dlatego mnozymy kierunek z kolejnoscia)
                     #ale samo mnozenie tych 2 sprawiloby ze bylyby o 1px obok wiec mnozymy jeszcze przez wielkosc kafelka
                     x = player.rect.centerx +offset_x
                     y = player.rect.centery
                     self.animation_player.create_particles('flame',(x,y),groups)
-                else:
+                else: #vertical
                     offset_y = (direction.y*i)* TILESIZE
                     x = player.rect.centerx
                     y = player.rect.centery + offset_y
