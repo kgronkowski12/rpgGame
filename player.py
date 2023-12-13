@@ -3,7 +3,7 @@ from settings import *
 from post import import_folder
 from entity import Entity
 
-class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
+class Player(Entity):
     def __init__(self,pos,groups,obstacle_sprites,create_attack,destroy_attack,create_magic):
         super().__init__(groups)
         self.image = pygame.image.load('../img/test/player.png').convert_alpha()
@@ -70,6 +70,8 @@ class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
                 self.status = 'down'
             else:
                 self.direction.y = 0
+
+
             if keys[pygame.K_RIGHT]:
                 self.direction.x =1
                 self.status = 'right'
@@ -96,8 +98,7 @@ class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
                 self.can_switch_weapon = False
                 self.weapon_switch_time = pygame.time.get_ticks()
 
-                if self.weapon_index < len(list(weapon_data.keys())) - 1: #-1 bo indeksy liczymy od 0, więc bronie
-                    #mają 0,1,2; natomiast ilość broni to 3
+                if self.weapon_index < len(list(weapon_data.keys())) - 1: 
                     self.weapon_index += 1
                 else:
                     self.weapon_index = 0
@@ -108,8 +109,7 @@ class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
                 self.can_switch_magic = False
                 self.magic_switch_time = pygame.time.get_ticks()
 
-                if self.magic_index < len(list(magic_data.keys())) - 1: #-1 bo indeksy liczymy od 0, więc bronie
-                    #mają 0,1,2; natomiast ilość broni to 3
+                if self.magic_index < len(list(magic_data.keys())) - 1:
                     self.magic_index += 1
                 else:
                     self.magic_index = 0
@@ -119,6 +119,7 @@ class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
         if self.direction.x == 0 and self.direction.y == 0: #gracz się nie rusza
             if not 'idle' in self.status and not 'attack' in self.status: #sprawdzamy czy status nie posiada już idle w tytule bo inaczej ciągle będzie dodawać koncowke _idle do statusu wiec otrzymamy up_idle_idle_idle_idle
                 self.status = self.status + '_idle'
+
         if self.attacking:
             self.direction.x = 0
             self.direction.y = 0
@@ -158,8 +159,11 @@ class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
         self.frame_index += self.animations_speed
         if self.frame_index >= len(animation):
             self.frame_index = 0
-        self.image = animation[int(self.frame_index)]
+        self.image = animation[int(self.frame_index)] #int bo animation speed to float a python oczekuje intów
         self.rect = self.image.get_rect(center = self.hitbox.center)
+
+
+        #flicker
         if not self.vulnerable:
             alpha = self.wave_value()
             self.image.set_alpha(alpha)
@@ -176,6 +180,16 @@ class Player(Entity): #pygame.sprite.Sprite w nawiasie bylo to wczesniej
         base_damage = self.stats['magic']
         spell_damage = magic_data[self.magic]['strength']
         return base_damage + spell_damage
+
+
+    def get_value_by_index(self,index):
+        return list(self.stats.values())[index]
+
+
+    def get_cost_by_index(self,index):
+        return list(self.upgrade_cost.values())[index]
+
+
 
     def energy_recovery(self):
         if self.energy < self.stats['energy']:

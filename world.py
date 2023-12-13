@@ -3,7 +3,7 @@ from settings import *
 from tile import Tile
 from player import Player
 from post import *
-from random import choice, randint
+from random import choice, randint #chyba bez randint???????????
 from weapon import Weapon
 from ui import UI
 from enemy import Enemy
@@ -11,7 +11,7 @@ from elements import AnimationPlayer
 from magic import MagicPlayer
 from upgrade import Upgrade
 
-class World:
+class Level:
     def __init__(self):
         self.display_surface = pygame.display.get_surface()
         self.game_paused = False
@@ -59,6 +59,7 @@ class World:
                                  [self.visable_sprites,self.obstacle_sprites,self.attackable_sprites],
                                  'flowers',random_flowers_image)
                         if style == 'object':
+                            #create an object tile
                             surf = graphics['objects'][int(col)]
                             Tile((x,y),[self.visable_sprites,self.obstacle_sprites],'object',surf)
 
@@ -72,7 +73,7 @@ class World:
                                                      self.destroy_attack,
                                                      self.create_magic) 
                             
-                            else:
+                            else: 
                                 if col == '1': monster_name = 'skeletor'
                                 elif col == '2': monster_name = 'mushroom'
                                 elif col == '3': monster_name = 'bear_dog'
@@ -83,6 +84,7 @@ class World:
                                       self.damage_player,
                                       self.trigger_death_particles,
                                       self.add_exp)
+                                #create attack bez () bo nie -> call a pass function
                                 #player idzie do visable sprites a potem dostaje info o obstacle sprites tylko do kolizji
 
 
@@ -114,11 +116,11 @@ class World:
                     for target_sprite in collision_sprites:
                         if target_sprite.sprite_type == 'flowers':
                             pos = target_sprite.rect.center #particles ida tam gdzie wczesniej byly kwiaty
-                            offset = pygame.math.Vector2(0,75)
-                            for leaf in range(randint(3,6)):
+                            offset = pygame.math.Vector2(0,75) #lekko przenosimy particles, czy usunac???
+                            for leaf in range(randint(3,6)): #usunac to i nizej 1 indent mniej
                                 self.animation_player.create_grass_particles(pos-offset,[self.visable_sprites])
                             target_sprite.kill() #niszczymy kwiaty
-                        else:
+                        else: #mozna zmienic na if sprite type = enemy
                             target_sprite.get_damage(self.player,attack_sprite.sprite_type)
 
 
@@ -156,19 +158,29 @@ class World:
 
 class YSortCameraGroup(pygame.sprite.Group):
     def __init__(self):
+
+        #general setup
         super().__init__()
         self.display_surface = pygame.display.get_surface()
         self.half_width = self.display_surface.get_size()[0]//2 #1 atrybut surface czyli szerokosc dzielimy na pol zeby gracz byl zawsze w centrum kamery
         self.half_height = self.display_surface.get_size()[1]//2
         self.offset = pygame.math.Vector2()
+
+        #creating the floor
         self.floor_surf = pygame.image.load('../img/tiles/map.png').convert()
         self.floor_rect = self.floor_surf.get_rect(topleft = (0,0))
 
     def custom_draw(self,player):
+        #getting the offset
         self.offset.x = player.rect.centerx - self.half_width #jak bardzo gracz "oddalil" sie od centrum
         self.offset.y = player.rect.centery - self.half_height
+
+        #drawing the floor
         floor_offset_pos = self.floor_rect.topleft - self.offset
         self.display_surface.blit(self.floor_surf,floor_offset_pos)
+
+
+#        for sprite in self.sprites():
         for sprite in sorted(self.sprites(),key = lambda sprite: sprite.rect.centery): #rysujemy według osi Y (więc najpierw rysujemy najwyższe i potem co raz niżej (im niżej tym "wyższa warstwa"))
             offset_pos = sprite.rect.topleft - self.offset #przesuniecie sprite'ow o wektor
             self.display_surface.blit(sprite.image,offset_pos) #rysowanie jednoczesnie w tej samej pozycji rectangle i obrazka

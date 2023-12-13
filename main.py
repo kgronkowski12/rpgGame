@@ -1,7 +1,7 @@
 import pygame
 import sys
 from settings import *
-from world import World
+from world import Level
 
 class Game:
     def __init__(self):          
@@ -10,7 +10,7 @@ class Game:
         pygame.display.set_caption('TEST TITLE')
         self.clock = pygame.time.Clock()
     
-        self.level = World()
+        self.level = Level()
 
     def run(self):
         while True:

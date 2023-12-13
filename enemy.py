@@ -6,9 +6,7 @@ from post import *
 class Enemy(Entity):
     def __init__(self,monster_name,pos,groups,obstacle_sprites,damage_player,trigger_death_particles,add_exp):
         super().__init__(groups)
-        self.sprite_type = 'enemy' #tak samo jak w tile a sam typ jest po to
-        #aby mialy rozne wartosci i reakcje, np gracz atakuje wroga (traci zdrowie a potem umiera)
-        #gracz atakuje kwiatka (nie ma zycia ale od razu zostaje zniszczone) itp
+        self.sprite_type = 'enemy'
 
         #grafika
         self.import_graphics(monster_name)
@@ -61,7 +59,7 @@ class Enemy(Entity):
 
 
 
-    def get_player_distance_direction(self,player):
+    def get_player_distance_direction(self,player): #może to rozbić te funkcje
         enemy_vec = pygame.math.Vector2(self.rect.center)
         player_vec = pygame.math.Vector2(player.rect.center)
         distance = (player_vec - enemy_vec).magnitude() #(odejmujemy wektory gracza i wroga od poczatku ukladu wspolrzednych)
@@ -99,7 +97,7 @@ class Enemy(Entity):
     def animate(self): # prawie to samo co funcja animate w graczu
         animation = self.animations[self.status]
 
-        self.frame_index += self.animations_speed
+        self.frame_index += self.animations_speed #bierzemy to z entity
         if self.frame_index >= len(animation):
             if self.status == 'attack':
                 self.can_attack = False
@@ -131,7 +129,7 @@ class Enemy(Entity):
         if self.vulnerable:
             self.direction = self.get_player_distance_direction(player)[1] #przesuwamy wroga w inny kierunek
             if attack_type == 'weapon':
-                self.health -= player.get_full_weapon_damage()
+                self.health -= player.get_full_weapon_damage() #getter funkcja
             else:
                 self.health -= player.get_full_magic_damage()
             self.hit_time = pygame.time.get_ticks()
@@ -140,13 +138,13 @@ class Enemy(Entity):
     def check_death(self):
         if self.health <= 0:
             self.kill()
-            self.trigger_death_particles(self.rect.center,self.monster_name)
+            self.trigger_death_particles(self.rect.center,self.monster_name) #sprawdzac rzeczy typu particle type bo sie w wielu powtarza
             self.add_exp(self.exp)
 
 
     def hit_reaction(self):
         if not self.vulnerable:
-            self.direction *= -self.resistance 
+            self.direction *= -self.resistance #zmienic resistance w pushback
 
 
 
