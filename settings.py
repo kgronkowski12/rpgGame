@@ -40,7 +40,7 @@ COLOUR_TEXT_SELECTED = 'white'
 #pushback to odleglosc na jaka są odrzuceni gdy gracz ich zaatakuje
 info_monster = {
 	'bear_dog': {'hp': 100, 'damage':20, 'xp':200,'attack_type': 'bite', 'attack_sound':'../sound/attack/slash.wav', 'range_notice': 450, 'range_attack': 70, 'speed': 6, 'pushback': 300},
-	'mushroom': {'hp': 100, 'damage':10, 'xp':150,'attack_type': 'cut', 'attack_sound':'../sound/attack/fireball.wav', 'range_notice': 400 , 'range_attack': 90, 'speed': 4, 'pushback': 200},
+	'mushroom': {'hp': 100, 'damage':10, 'xp':150,'attack_type': 'cut', 'attack_sound':'../sound/attack/mushroom.wav', 'range_notice': 400 , 'range_attack': 90, 'speed': 4, 'pushback': 200},
 	'skeletor': {'hp': 85, 'damage':6, 'xp':125,'attack_type': 'bone', 'attack_sound':'../sound/attack/slash.wav', 'range_notice': 360, 'range_attack': 85, 'speed': 5, 'pushback': 50}}
 
 
