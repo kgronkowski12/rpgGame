@@ -1,58 +1,49 @@
 import pygame
-from post import import_folder
-from random import choice
+from settings import folder_import
 
-class AnimationPlayer:
+class AnimationMaker:
     def __init__(self):
         self.frames = {
-            #magic
-            'flame': import_folder('../img/elements/ball/frames'),
-            'heal': import_folder('../img/elements/heal/frames'),
             #ataki
-            'bite': import_folder('../img/elements/bite'),
-            'cut': import_folder('../img/elements/cut'),
-            'bone': import_folder('../img/elements/bone'),
-            #smierci wrogow
-            'bear_dog': import_folder('../img/elements/bear_dog'),
-            'mushroom': import_folder('../img/elements/mushroom'),
-            'skeletor': import_folder('../img/elements/skeletor'),
-            'leaf':(
-                import_folder('../img/elements/leaf'),
-                self.reflect_images(import_folder('../img/elements/leaf'))
-            )
+            'bite': folder_import('../img/elements/bite'),
+            'cut': folder_import('../img/elements/cut'),
+            'bone': folder_import('../img/elements/bone'),
+            #śmierci
+            'bear_dog': folder_import('../img/elements/bear_dog'),
+            'mushroom': folder_import('../img/elements/mushroom'),
+            'skeletor': folder_import('../img/elements/skeletor'),
+            'flowers': folder_import('../img/elements/leaf'),
+            #magia
+            'flame': folder_import('../img/elements/ball/frames'),
+            'heal': folder_import('../img/elements/heal/frames')           
         }
-    
-    def reflect_images(self,frames):
-        new_frames = []
-        for frame in frames:
-            flipped_frame = pygame.transform.flip(frame,True,False)
-            new_frames.append(flipped_frame)
-        return new_frames
-    
-    def create_grass_particles(self,pos,groups):
-        animation_frames = choice(self.frames['leaf'])
-        ParticleEffect(pos,animation_frames,groups)
 
-    def create_particles(self,animation_type,pos,groups):
+    def create_elements(self,animation_type,position,group):
         animation_frames = self.frames[animation_type]
-        ParticleEffect(pos,animation_frames,groups)
+        ElementEffect(position,animation_frames,group)
 
-class ParticleEffect(pygame.sprite.Sprite):
-    def __init__(self, pos, animation_frames,groups):
-        super().__init__(groups)
-        self.sprite_type = 'magic'
+    def create_flowers_elements(self,position,group):
+        animation_frames = self.frames['flowers']
+        ElementEffect(position,animation_frames,group)
+        
+
+class ElementEffect(pygame.sprite.Sprite):
+    def __init__(self, position, animation_frames,group):
+        super().__init__(group)
+        self.label_sprite = 'magic'
         self.frame_index = 0
         self.animation_speed = 0.15
         self.frames = animation_frames
         self.image = self.frames[self.frame_index]
-        self.rect = self.image.get_rect(center = pos)
+        self.rect = self.image.get_rect(center = position)
 
-    def animate(self): #zwiększamy indeks klatki, jeśli wyjdziemy poza długość listy
-        #klatek to 'zabijamy' naszego sprite'a
+
+    def create_animation(self): #zwiększamy indeks klatki, jeśli wyjdziemy poza długość listy klatek to 'zabijamy' naszego sprite'a
         self.frame_index += self.animation_speed
         if self.frame_index >= len(self.frames):
             self.kill()
         else:
             self.image = self.frames[int(self.frame_index)]
+
     def update(self):
-        self.animate()
+        self.create_animation()
