@@ -1,48 +1,76 @@
+from csv import reader
+from os import walk
+import pygame
+
+
+
 WIDTH = 1280
 HEIGHT = 720
 FPS = 60
 TILESIZE = 64
 
 #ui
+BAR_WIDTH = 200
 BAR_HEIGHT = 16
-HEALTH_BAR_WIDTH = 200
-ENERGY_BAR_WIDTH = 200
-ITEM_BOX_SIZE = 64
-UI_FONT = '../img/font/Minecraft.ttf'
-UI_FONT_SIZE = 18
+BOX = 64
+FONT_UI = '../img/font/Minecraft.ttf'
+FONT_UI_SIZE = 18
 
-#kolory
-WATER_COLOR = '#71ddee'
-UI_BG_COLOR = '#222222'
-UI_BORDER_COLOR = '#111111'
-TEXT_COLOR = 'white'
+#kolory!!!!!!!!!!!!!!!!!
+COLOUR_BACKGROUND = '#4DA6FF'
+COLOUR_TEXT = 'white'
+
+COLOUR_UI_BG = '#303030'
+COLOUR_UI_BORDER = 'black'
 
 #kolory ui
-HEALTH_COLOR = '#800a01'
-ENERGY_COLOR = '#010a70'
+COLOUR_HEALTH = '#800a01'
+COLOUR_MANA = '#010a70'
 
 # menu ulepszeń
-TEXT_COLOR_SELECTED = '#111111'
-BAR_COLOR = '#EEEEEE'
-BAR_COLOR_SELECTED = '#111111'
-UPGRADE_BG_COLOR_SELECTED = '#EEEEEE'
+COLOUR_UPGRADE_BG = 'white'
+COLOUR_BAR = 'black'
+COLOUR_TEXT_UPGRADE = 'black'
+
+COLOUR_UPGRADE_BG_SELECTED = 'black'
+COLOUR_BAR_SELECTED = 'white'
+COLOUR_TEXT_SELECTED = 'white'
+
+
+#pushback to odleglosc na jaka są odrzuceni gdy gracz ich zaatakuje
+info_monster = {
+	'bear_dog': {'hp': 100, 'damage':20, 'xp':200,'attack_type': 'bite', 'attack_sound':'../sound/attack/slash.wav', 'range_notice': 450, 'range_attack': 70, 'speed': 6, 'pushback': 300},
+	'mushroom': {'hp': 100, 'damage':10, 'xp':150,'attack_type': 'cut', 'attack_sound':'../sound/attack/fireball.wav', 'range_notice': 400 , 'range_attack': 90, 'speed': 4, 'pushback': 200},
+	'skeletor': {'hp': 85, 'damage':6, 'xp':125,'attack_type': 'bone', 'attack_sound':'../sound/attack/slash.wav', 'range_notice': 360, 'range_attack': 85, 'speed': 5, 'pushback': 50}}
+
 
 #bronie
-weapon_data = {
-	'sword': {'cooldown': 100, 'damage': 15,'graphic':'../img/weapons/sword/full.png'},
-	'axe': {'cooldown': 300, 'damage': 20, 'graphic':'../img/weapons/axe/full.png'},
-	'sable':{'cooldown': 50, 'damage': 8, 'graphic':'../img/weapons/sable/full.png'}}
+info_weapons = {
+	'sword': {'damage': 15,'cooldown': 300, 'graphic':'../img/weapons/sword/full.png'},
+	'axe': {'damage': 25, 'cooldown': 650, 'graphic':'../img/weapons/axe/full.png'},
+	'sable':{'damage': 5, 'cooldown': 100, 'graphic':'../img/weapons/sable/full.png'}}
 
 
 #magia
-magic_data = {
-    'flame': {'strength': 5,'cost': 20,'graphic':'../img/elements/ball/ball.png'},
-    'heal': {'strength': 20,'cost': 10,'graphic':'../img/elements/heal/heal.png'},
+info_magic = {
+    'flame': {'strength': 25,'mana_cost': 25,'graphic':'../img/elements/ball/ball.png'},
+    'heal': {'strength': 30,'mana_cost': 15,'graphic':'../img/elements/heal/heal.png'},
 }
 
+## funkcje do importowania:
+def folder_import(path):
+    surface_list = []
+    for _,__,img_files in walk(path):
+        for image in img_files:
+            full_path = path + '/' + image
+            image_surf = pygame.image.load(full_path).convert_alpha()
+            surface_list.append(image_surf)
+    return surface_list
 
-#wrogowie;  resistence to odleglosc na jaka są odrzuceni gdy gracz ich zaatakuje
-monster_data = {
-	'bear_dog': {'health': 100,'exp':100,'damage':20,'attack_type': 'bite', 'attack_sound':'../sound/attack/slash.wav', 'speed': 3, 'resistance': 3, 'attack_radius': 80, 'notice_radius': 360},
-	'mushroom': {'health': 100,'exp':110,'damage':8,'attack_type': 'cut', 'attack_sound':'../sound/attack/fireball.wav', 'speed': 4, 'resistance': 3, 'attack_radius': 60, 'notice_radius': 350},
-	'skeletor': {'health': 70,'exp':120,'damage':6,'attack_type': 'bone', 'attack_sound':'../sound/attack/slash.wav', 'speed': 3, 'resistance': 3, 'attack_radius': 50, 'notice_radius': 300}}
+def csv_import(path):
+    world_csv = []
+    with open(path) as world_map:
+        layout = reader(world_map,delimiter = ',')
+        for row in layout:
+            world_csv.append(list(row))
+        return world_csv
