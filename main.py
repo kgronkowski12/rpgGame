@@ -1,16 +1,15 @@
 import pygame
 import sys
 from settings import *
-from world import Level
+from world import World
 
 class Game:
-    def __init__(self):          
+    def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH,HEIGHT))
-        pygame.display.set_caption('TEST TITLE')
         self.clock = pygame.time.Clock()
-    
-        self.level = Level()
+        pygame.display.set_caption('Froggo Adventure')
+        self.world = World()
 
     def run(self):
         while True:
@@ -19,13 +18,13 @@ class Game:
                     pygame.quit()
                     sys.exit() #możliwość wyłączenia gry bez erroru
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_u:
-                        self.level.toggle_menu()
+                    if event.key == pygame.K_LSHIFT:
+                        self.world.toggle_menu()
  
-            self.screen.fill('black')
-            self.level.run()
-            pygame.display.update()
+            self.screen.fill(COLOUR_BACKGROUND)
+            self.world.run()
             self.clock.tick(FPS)
+            pygame.display.update()
  
 if __name__ == '__main__':
     game = Game()
