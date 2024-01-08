@@ -54,7 +54,7 @@ class Player(pygame.sprite.Sprite):
 
 
         #importujemy dźwieki
-        self.weapon_attack_sound = pygame.mixer.Sound('../sound/sword.wav')
+        self.weapon_attack_sound = pygame.mixer.Sound('../sound/attack.wav')
         self.weapon_attack_sound.set_volume(0.4)
 
     def import_player(self):
