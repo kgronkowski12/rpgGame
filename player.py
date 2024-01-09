@@ -57,6 +57,10 @@ class Player(pygame.sprite.Sprite):
         self.weapon_attack_sound = pygame.mixer.Sound('../sound/attack.wav')
         self.weapon_attack_sound.set_volume(0.4)
 
+        #czcionka GameOver Screen
+        self.fontBig = pygame.font.Font(FONT_UI,90)
+        self.font = pygame.font.Font(FONT_UI,60)
+
     def import_player(self):
         player_path = '../img/player/'
         self.animation_status = {'up': [],'down': [], 'left': [], 'right': [],
@@ -156,6 +160,23 @@ class Player(pygame.sprite.Sprite):
                 else:
                     self.magic_index = 0
                 self.magic = list(info_magic.keys())[self.magic_index]
+
+            #Game Over screen
+            if self.hp <= 0:
+                surface = pygame.display.get_surface()
+                Loserect = pygame.Rect(0,0,surface.get_size()[0],surface.get_size()[1])
+                pygame.draw.rect(surface,'black',Loserect,500)
+
+                dead_surf = self.fontBig.render("Game Over",False,'white')
+
+                scoreText = "Score : "+str(self.xp)
+                score_surf = self.font.render(scoreText,False,'white')
+
+                surface.blit(dead_surf,(surface.get_size()[0]/3*0.87,surface.get_size()[1]/4))
+                surface.blit(score_surf,(surface.get_size()[0]/3,surface.get_size()[1]/2 *1.5))
+                
+                self.hitbox.x = 10000000#Teleportujemy gracza żeby wrogowie nie mogli go dalej atakować w tle.
+                self.hitbox.y = 10000000
 
     def get_status(self):
         if self.direction.x == 0 and self.direction.y == 0: #gracz się nie rusza
