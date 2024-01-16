@@ -3,73 +3,99 @@ from settings import *
 
 class UI:
     def __init__(self):
-        self.display_surface = pygame.display.get_surface()
-        self.font = pygame.font.Font(FONT_UI,FONT_UI_SIZE)
-
-        #paski i statystyki
-        self.health_bar_rect = pygame.Rect(8,668,BAR_WIDTH,BAR_HEIGHT)
-        self.mana_bar_rect = pygame.Rect(8,685,BAR_WIDTH,BAR_HEIGHT)
-
-        #konwertowanie słownika z broniami
+        self.screen = pygame.display.get_surface()
+        self.font = pygame.font.Font(FONT,FONT_SIZE)
+        #konwertowanie słownika z czarami
+        self.spells_graphics = []
+        for spells in INFO_SPELLS.values():
+            spells = pygame.image.load(spells['graphic'])
+            self.spells_graphics.append(spells)
+        #to samo ale bronie
         self.weapon_graphics = []
-        for weapon in info_weapons.values():
-            path = weapon['graphic']
-            weapon = pygame.image.load(path).convert_alpha()
+        for weapon in INFO_WEAPONS.values():
+            folder = weapon['graphic']
+            weapon = pygame.image.load(folder)
             self.weapon_graphics.append(weapon)
+        #paski i statystyki
+        bar_x = 8
+        bar_y = 685
+        self.health_bar = pygame.Rect(bar_x,bar_y-17,BAR_WIDTH,BAR_HEIGHT)
+        self.mana_bar = pygame.Rect(bar_x,bar_y,BAR_WIDTH,BAR_HEIGHT)
 
-        self.magic_graphics = []
-        for magic in info_magic.values():
-            magic = pygame.image.load(magic['graphic']).convert_alpha()
-            self.magic_graphics.append(magic)
+    def controls(self):
+        text_surface = self.font.render(str('Sterowanie:                     '),False,COLOUR_TEXT)
+        text_surface2 = self.font.render(str('poruszanie sie - strzalki    '),False,COLOUR_TEXT)
+        text_surface3 = self.font.render(str('magia - w                        '),False,COLOUR_TEXT)        
+        text_surface4 = self.font.render(str('zmiana broni/magii - a/d  '),False,COLOUR_TEXT)        
+        text_surface5 = self.font.render(str('menu ulepszen - lewy shift'),False,COLOUR_TEXT)
+        #na oko wyliczone                
+        x=1045
+        y=545
+        text_rectangle = text_surface.get_rect(topleft = (x,y))
+        text_rectangle2 = text_surface2.get_rect(topleft = (x,y+38))
+        text_rectangle3 = text_surface3.get_rect(topleft = (x,y+76))
+        text_rectangle4 = text_surface4.get_rect(topleft = (x,y+114))
+        text_rectangle5 = text_surface5.get_rect(topleft = (x,y+152))
 
-    def show_bar(self,current,max_amount,bg_rect,colour):
-        #tło dla paska
-        pygame.draw.rect(self.display_surface,COLOUR_UI_BG,bg_rect)
-        #konwertowanie statystyk do pikseli
-        ratio = current / max_amount #np obecne zycie/max zycie 100/100 = 1
-        current_width = bg_rect.width * ratio #pasek 200px*1 ratio =200px (wiec caly pasek jest wypelniony zyciem)
-        current_rect = bg_rect.copy() #juz wiekszosc info jest w bg_rect wiec to kopiuje po prostu
-        current_rect.width = current_width
-        #rysujemy pasek
-        pygame.draw.rect(self.display_surface,colour,current_rect)
-        pygame.draw.rect(self.display_surface,COLOUR_UI_BORDER,bg_rect,4) #ostatni argument (4) sprawia że pozbywamy się wypełnienia i zostaje
-        #tylko krawędź na tyle duża jaką liczbę podaliśmy
+        pygame.draw.rect(self.screen,COLOUR_UI_BG,text_rectangle.inflate(20,20))
+        self.screen.blit(text_surface,text_rectangle)
 
-    def show_xp(self,xp):
-        text_surf = self.font.render(str(int(xp)),False,COLOUR_TEXT) #false bo zadnego anty aliasingu nie chcemy bo mamy pixelart DOCH
-        #xp zmieniamy w str bo to ma byc info ale wczesniej na inta zeby sie pozbyc ewentualnych dziwnych koncowek np 4.12341242 w xpie
-        x = self.display_surface.get_size()[0] - 1262
-        y = self.display_surface.get_size()[1] - 152
-        text_rect = text_surf.get_rect(topleft = (x,y))
-        
-        pygame.draw.rect(self.display_surface,COLOUR_UI_BG,text_rect.inflate(20,20))
-        self.display_surface.blit(text_surf,text_rect)
-        pygame.draw.rect(self.display_surface,COLOUR_UI_BORDER,text_rect.inflate(20,20),3)
+        pygame.draw.rect(self.screen,COLOUR_UI_BG,text_rectangle2.inflate(20,20))
+        self.screen.blit(text_surface2,text_rectangle2)
 
-    def selection_box(self,left,top,has_switched):
-        bg_rect = pygame.Rect(left,top,BOX,BOX)
-        pygame.draw.rect(self.display_surface,COLOUR_UI_BG,bg_rect)
-        return bg_rect
+        pygame.draw.rect(self.screen,COLOUR_UI_BG,text_rectangle3.inflate(20,20))
+        self.screen.blit(text_surface3,text_rectangle3)
 
-    def weapon_overlay(self,weapon_index,has_switched):
-        bg_rect = self.selection_box(8,600,has_switched) # broń
-        weapon_surf = self.weapon_graphics[weapon_index]
-        weapon_rect = weapon_surf.get_rect(center = bg_rect.center)
+        pygame.draw.rect(self.screen,COLOUR_UI_BG,text_rectangle4.inflate(20,20))
+        self.screen.blit(text_surface4,text_rectangle4)
 
-        self.display_surface.blit(weapon_surf,weapon_rect)
+        pygame.draw.rect(self.screen,COLOUR_UI_BG,text_rectangle5.inflate(20,20))
+        self.screen.blit(text_surface5,text_rectangle5)
 
+
+
+    def xp(self,xp):
+        surface = self.font.render(str(int(xp)),False,COLOUR_TEXT)
+        rectangle = surface.get_rect(topleft = (18,568))
+        pygame.draw.rect(self.screen,COLOUR_UI_BG,rectangle.inflate(20,20))
+        self.screen.blit(surface,rectangle)
+
+
+    def bar(self,froggo):
+
+        #życie
+        pygame.draw.rect(self.screen,COLOUR_UI_BG,self.health_bar)
+        width1 = self.health_bar.width * (froggo.hp/froggo.stats['hp']) #pasek 200px*1 ratio =200px (wiec caly pasek jest wypelniony zyciem)
+        rectangle1 = self.health_bar.copy() #juz wiekszosc info jest w health_bar wiec to kopiuje po prostu
+        rectangle1.width = width1
+        pygame.draw.rect(self.screen,COLOUR_HEALTH,rectangle1)
+        pygame.draw.rect(self.screen,COLOUR_UI_BORDER,self.health_bar,4)
+
+        #mana
+        pygame.draw.rect(self.screen,COLOUR_UI_BG,self.mana_bar)
+        current_width2 = self.mana_bar.width * (froggo.mana/froggo.stats['mana'])
+        current_rectangle2 = self.mana_bar.copy()
+        current_rectangle2.width = current_width2
+        pygame.draw.rect(self.screen,COLOUR_MANA,current_rectangle2)
+        pygame.draw.rect(self.screen,COLOUR_UI_BORDER,self.mana_bar,4)
+
+    def combat_square(self,index_spell,index_weapon):
+        square1 = pygame.Rect(8,600,BOX,BOX)
+        pygame.draw.rect(self.screen,COLOUR_UI_BG,square1)
+        surface1 = self.weapon_graphics[index_weapon]
+        rectangle1 = surface1.get_rect(center = square1.center)
+        self.screen.blit(surface1,rectangle1)
+
+        square2 = pygame.Rect(73,600,BOX,BOX)
+        pygame.draw.rect(self.screen,COLOUR_UI_BG,square2)
+        surface2 = self.spells_graphics[index_spell]
+        rectangle2 = surface2.get_rect(center = square2.center)
+        self.screen.blit(surface2,rectangle2)
     
-    def magic_overlay(self,magic_index,has_switched):
-        bg_rect = self.selection_box(73,600,has_switched) # magia
-        magic_surf = self.magic_graphics[magic_index]
-        magic_rect = magic_surf.get_rect(center = bg_rect.center)
-        self.display_surface.blit(magic_surf,magic_rect)
 
 
-    def display(self,player):
-        self.show_bar(player.hp,player.stats['hp'],self.health_bar_rect,COLOUR_HEALTH)
-        self.show_bar(player.mana,player.stats['mana'],self.mana_bar_rect,COLOUR_MANA)
-
-        self.show_xp(player.xp)
-        self.weapon_overlay(player.weapon_index,not player.can_switch_weapon)
-        self.magic_overlay(player.magic_index, not player.can_switch_magic)
+    def display(self,froggo):
+        self.controls()
+        self.xp(froggo.xp)
+        self.bar(froggo)
+        self.combat_square(froggo.spells_index,froggo.weapon_index)
