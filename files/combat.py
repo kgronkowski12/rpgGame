@@ -5,6 +5,7 @@ class Weapon(pygame.sprite.Sprite):
     def __init__(self,label,froggo):
         super().__init__(label)
         self.category = 'weapon'
+        self.UI = False
         attack_direction = froggo.status.split('_')[0] #chcemy się pozbyć stanów idle z listy stanów tak by dostać tylko kierunek
         folder = f'../img/weapons/{froggo.weapon}/{attack_direction}.png'
         self.graphic = pygame.image.load(folder)
