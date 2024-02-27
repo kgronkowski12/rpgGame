@@ -49,11 +49,11 @@ class Drop(pygame.sprite.Sprite):
         self.froggo=None
         self.type=typer
         if self.type == "heart":
-            self.image = pygame.image.load("../img/objects/heart.png").convert_alpha()  # Load image with transparency
+            self.image = pygame.image.load("../img/other/heart.png").convert_alpha()  # Load image with transparency
         if self.type == "mana":
-            self.image = pygame.image.load("../img/objects/manaREG.png").convert_alpha() 
+            self.image = pygame.image.load("../img/other/manaREG.png").convert_alpha() 
         if self.type == "coin":
-            self.image = pygame.image.load("../img/objects/coin.png").convert_alpha() 
+            self.image = pygame.image.load("../img/other/coin.png").convert_alpha() 
         self.image = pygame.transform.scale(self.image, (40, 40)) 
         self.rect = self.image.get_rect()  # Get the rectangle bounding the sprite
         self.graphic=self.image
