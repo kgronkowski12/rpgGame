@@ -2,15 +2,19 @@ import pygame
 from settings import *
 from math import sin
 import datetime
-
+from elements import *
 class Froggo(pygame.sprite.Sprite):
     def __init__(self,position,label,obstacle_sprites,create_attack,destroy_attack,create_spells):
         super().__init__(label)
+        self.UI = False
         self.graphic = pygame.image.load('../img/froggo/down/down_0.png')
         self.rect = self.graphic.get_rect(topleft=position)
         self.hitbox = self.rect.inflate(-8,-26)
 
+        self.talking = 0
+        self.waitTime = 0
 
+        self.coins=5
 
         self.import_froggo()
         self.status = 'down'
@@ -115,6 +119,15 @@ class Froggo(pygame.sprite.Sprite):
 
 
     def froggo_input(self):
+        coinCount = self.coins
+
+        x = 1045
+        c = "Coins: "+str(coinCount)
+        coin_surface = pygame.font.Font(FONT,FONT_SIZE).render(str(c),False,COLOUR_TEXT)
+        text_rectangle6 = coin_surface.get_rect(topleft = (x+150,0))
+        pygame.draw.rect(pygame.display.get_surface(),COLOUR_UI_BG,text_rectangle6.inflate(20,20))
+        pygame.display.get_surface().blit(coin_surface,text_rectangle6)
+
         if not self.attacking: #by nie mozna bylo zmienic kierunku w trakcie ataku
             keys = pygame.key.get_pressed()
 
@@ -177,6 +190,22 @@ class Froggo(pygame.sprite.Sprite):
                 else:
                     self.spells_index = 0
                 self.spells = list(INFO_SPELLS.keys())[self.spells_index]
+
+            self.waitTime-=1
+            if keys[pygame.K_i] and self.waitTime<=0:
+                self.waitTime=15
+
+                player_image = pygame.image.load(
+                    "../img/other/dialog.jpg").convert_alpha()  # Load image with transparency
+                player_image = pygame.transform.scale(player_image, (1000, 500))
+
+                player_sprite = Talk()
+                player_sprite.image = player_image
+                all_sprites.add(player_sprite)
+                self.talking += 1
+                if self.talking==2:
+                    self.talking=0
+
 
 
 #Game Over screen

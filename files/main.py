@@ -33,6 +33,12 @@ class Game:
             self.window.fill(COLOUR_BACKGROUND)
             self.world.run()
             self.clock.tick(FPS)
+            for x in all_sprites:
+                x.froggo=self.world.froggo
+                self.world.visable_sprites.add(x)
+                all_sprites.remove(x)
+            #all_sprites.draw(self.window)
+            #all_sprites.update()
             pygame.display.update()
  
 if __name__ == '__main__':

@@ -23,6 +23,8 @@ class UI:
         self.mana_bar = pygame.Rect(bar_x,bar_y,BAR_WIDTH,BAR_HEIGHT)
 
     def controls(self):
+        c = "Coins: "+str(coinCount)
+        coin_surface = self.font.render(str(c),False,COLOUR_TEXT)
         text_surface = self.font.render(str('Sterowanie:                     '),False,COLOUR_TEXT)
         text_surface2 = self.font.render(str('poruszanie sie - strzalki    '),False,COLOUR_TEXT)
         text_surface3 = self.font.render(str('magia - w                        '),False,COLOUR_TEXT)        
@@ -31,6 +33,7 @@ class UI:
         #na oko wyliczone                
         x=1045
         y=545
+        text_rectangle6 = coin_surface.get_rect(topleft = (x+150,0))
         text_rectangle = text_surface.get_rect(topleft = (x,y))
         text_rectangle2 = text_surface2.get_rect(topleft = (x,y+38))
         text_rectangle3 = text_surface3.get_rect(topleft = (x,y+76))
@@ -51,6 +54,12 @@ class UI:
 
         pygame.draw.rect(self.screen,COLOUR_UI_BG,text_rectangle5.inflate(20,20))
         self.screen.blit(text_surface5,text_rectangle5)
+
+        c = "Coins: "+str(coinCount)
+        coin_surface = pygame.font.Font(FONT,FONT_SIZE).render(str(c),False,COLOUR_TEXT)
+        text_rectangle6 = coin_surface.get_rect(topleft = (x+150,0))
+        pygame.draw.rect(pygame.display.get_surface(),COLOUR_UI_BG,text_rectangle6.inflate(20,20))
+        self.screen.blit(coin_surface,text_rectangle6)
 
 
 

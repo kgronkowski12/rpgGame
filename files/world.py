@@ -10,6 +10,7 @@ from upgrade import Upgrade
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self,position,label,category,surface=pygame.Surface((TILESIZE,TILESIZE))):
+        self.UI = False
         super().__init__(label)
         self.category = category
         self.graphic = surface
@@ -188,6 +189,11 @@ class SortByY(pygame.sprite.Group):
         for sprite in sorted(self.sprites(),key = lambda sprite: sprite.rect.centery): #rysujemy według osi Y (więc najpierw rysujemy najwyższe i potem co raz niżej (im niżej tym "wyższa warstwa"))
             shift_position = sprite.rect.topleft - self.shift #przesuniecie sprite'ow o wektor
             self.screen.blit(sprite.graphic,shift_position) #rysowanie jednoczesnie w tej samej pozycji rectangle i obrazka
+        for sprite in self.sprites():
+            if sprite.UI:
+                shift_position = sprite.rect.topleft - self.shift  # przesuniecie sprite'ow o wektor
+                self.screen.blit(sprite.graphic,shift_position)  # rysowanie jednoczesnie w tej samej pozycji rectangle i obrazka
+
 
 
     def monster_update(self,froggo):

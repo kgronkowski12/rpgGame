@@ -1,12 +1,14 @@
 import pygame
 from settings import *
 from math import sin
-
+from elements import *
+from world import *
+import random
 
 class Monster(pygame.sprite.Sprite):
     def __init__(self,monster_name,position,label,obstacle_sprites,damage_froggo,trigger_death_elements,add_xp):
         super().__init__(label)
-        
+        self.UI = False
         self.category = 'monster' #typ jest po to
         #aby mialy rozne wartosci i reakcje, np gracz atakuje wroga (traci zdrowie a potem umiera)
         #gracz atakuje kwiatka (nie ma zycia ale od razu zostaje zniszczone) itp
@@ -188,6 +190,22 @@ class Monster(pygame.sprite.Sprite):
 
     def check_death(self):
         if self.hp <= 0:
+            player_image = pygame.image.load("../img/flowers/flower_3.png").convert_alpha()  # Load image with transparency
+            player_image = pygame.transform.scale(player_image, (50, 50)) 
+            type="heart"
+            rand = random.randint(0,100)
+            if rand<=70:
+                type="mana"
+            if rand<=50:
+                type="coin"
+
+
+            player_sprite =     Drop(type)
+            player_sprite.rect.topleft=self.rect.topleft
+            player_sprite.image = player_image
+            all_sprites.add(player_sprite)
+            #visable_sprites.add(player_sprite)
+
             self.kill()
             self.trigger_death_elements(self.rect.center,self.monster_name) #sprawdzac rzeczy typu element type bo sie w wielu powtarza
             self.add_xp(self.xp)

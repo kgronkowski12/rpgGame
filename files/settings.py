@@ -2,11 +2,12 @@ import pygame
 from csv import reader
 from os import walk
 
+all_sprites = pygame.sprite.Group()
+
 WIDTH = 1280
 HEIGHT = 720
 TILESIZE = 64
 FPS = 60
-
 #kolory!!!!!!!!!!!!!!!!!
 COLOUR_BACKGROUND = '#4DA6FF'
 COLOUR_TEXT = 'white'
@@ -33,6 +34,8 @@ BAR_WIDTH = 200
 BAR_HEIGHT = 16
 BOX = 64
 
+coinCount = 0
+
 
 
 FROGGO_MAX_LEVEL = {'hp':500,'mana':200,'attack':15,'spells':15,"speed":15}
@@ -55,6 +58,7 @@ INFO_WEAPONS = {
 INFO_SPELLS = {
     'energy_ball': {'strength': 25,'mana_cost': 25,'graphic':'../img/elements/ball/ball.png'},
     'heal': {'strength': 30,'mana_cost': 15,'graphic':'../img/elements/heal/heal.png'},
+    'shield': {'strength': 30,'mana_cost': 15,'graphic':'../img/elements/heal/heal.png'},
 }
 
 ## funkcje do importowania:
