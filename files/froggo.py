@@ -54,6 +54,7 @@ class Froggo(pygame.sprite.Sprite):
         self.mana = self.stats['mana']
         self.xp = 3500
         self.score = 0
+        self.monster_count = 0
         self.speed = self.stats['speed']
 
         #timer zapisywania wyniku
@@ -216,12 +217,16 @@ class Froggo(pygame.sprite.Sprite):
 
 
 #Game Over screen
-            if self.hp <= 0:
+            if self.hp <= 0 or self.monster_count==51:
                 surface = pygame.display.get_surface()
                 Loserect = pygame.Rect(0,0,surface.get_size()[0],surface.get_size()[1])
-                pygame.draw.rect(surface,'black',Loserect,500)
+                if self.hp <= 0 and self.monster_count != 51:
+                    pygame.draw.rect(surface,'black',Loserect,500)
+                if self.hp >= 0 and self.monster_count == 51:
+                    pygame.draw.rect(surface,'green',Loserect,500)
 
                 dead_surf = self.fontBig.render("Game Over",False,'white')
+                win_surf = self.fontBig.render("You won!",False,'white')
 
                 scoreText = "Wynik : "+str(int(self.score))
                 score_surf = self.font.render(scoreText,False,'white')
@@ -232,10 +237,13 @@ class Froggo(pygame.sprite.Sprite):
                 save_text = "Zapisz wynik - wcisnij F"
                 save_surface = self.font.render(save_text,False,'white')
 
-                surface.blit(dead_surf,(370,90))
                 surface.blit(score_surf,(425,250))
                 surface.blit(restart_surface,(358,530))
                 surface.blit(save_surface,(320,620))
+                if self.hp <= 0 and self.monster_count != 51:
+                    surface.blit(dead_surf,(370,90))
+                if self.hp >= 0 and self.monster_count == 51:
+                    surface.blit(win_surf,(370,90))
 
 
                 self.hitbox.x = 10000000#Teleportujemy gracza żeby wrogowie nie mogli go dalej atakować w tle.
