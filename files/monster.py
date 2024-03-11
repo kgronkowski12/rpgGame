@@ -16,10 +16,13 @@ class Monster(pygame.sprite.Sprite):
         #grafika
         self.import_graphics(monster_name)
         self.status = 'idle'
+        self.timer = 0
         self.frame_index = 0
         self.animation_speed = 0.15
         self.graphic = self.animation_status[self.status][self.frame_index]
 
+        self.screen = pygame.display.get_surface()
+        self.font = pygame.font.Font(FONT, FONT_SIZE)
 
         #poruszanie sie
         self.rect = self.graphic.get_rect(topleft = position)
@@ -134,6 +137,23 @@ class Monster(pygame.sprite.Sprite):
             self.status = 'move'
         else:
             self.status = 'idle'
+        if self.status=='move':
+            self.timer+=1
+            if(self.timer<=45):
+                say = ""
+                if self.monster_name=="bear_dog":
+                    say = "Woof Woof!"
+                if self.monster_name=="mushroom":
+                    say = "Fungi fury!"
+                if self.monster_name=="skeletor":
+                    say = "Bony barrage!"
+                text_surface2 = self.font.render(say,False,COLOUR_TEXT)
+                x= WIDTH/2 + self.hitbox.x - froggo.hitbox.x + 35
+                y= HEIGHT/2 + self.hitbox.y - froggo.hitbox.y + 25
+                text_rectangle2 = text_surface2.get_rect(topleft = (x,y+38))
+
+                pygame.draw.rect(self.screen,COLOUR_UI_BG,text_rectangle2.inflate(30,25))
+                self.screen.blit(text_surface2,text_rectangle2)
     
 
     def actions(self,froggo):

@@ -128,6 +128,8 @@ class World:
             self.spells_froggo.energy_ball(mana_cost, self.froggo, [self.visable_sprites,self.combat_sprites])
         if type =='heal':
             self.spells_froggo.cast_heal(mana_cost, strength, self.froggo,[self.visable_sprites])
+        if type =='shield':
+            self.spells_froggo.shield(mana_cost, self.froggo)
 
     def add_score_xp(self,amount):
 

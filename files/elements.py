@@ -1,5 +1,6 @@
 import pygame
 from settings import *
+import random
 
 class AnimationMaker:
     def __init__(self):
@@ -48,6 +49,7 @@ class Drop(pygame.sprite.Sprite):
         self.UI = False
         self.froggo=None
         self.type=typer
+        self.wait=0
         if self.type == "heart":
             self.image = pygame.image.load("../img/other/heart.png").convert_alpha()  # Load image with transparency
         if self.type == "mana":
@@ -59,6 +61,21 @@ class Drop(pygame.sprite.Sprite):
         self.graphic=self.image
 
     def update(self):
+        self.wait+=1
+        if self.wait>=50:
+            if self.wait//5 % 2 == 0:
+                self.image = pygame.image.load("../img/empty.png").convert_alpha() 
+            else:
+                if self.type == "heart":
+                    self.image = pygame.image.load("../img/other/heart.png").convert_alpha()  # Load image with transparency
+                if self.type == "mana":
+                    self.image = pygame.image.load("../img/other/manaREG.png").convert_alpha() 
+                if self.type == "coin":
+                    self.image = pygame.image.load("../img/other/coin.png").convert_alpha() 
+            if self.wait>=85:
+                self.kill()
+            self.image = pygame.transform.scale(self.image, (40, 40)) 
+            self.graphic = self.image
         if self.froggo.hitbox.x>self.rect.x-50 and self.froggo.hitbox.x<self.rect.x+70 and self.froggo.hitbox.y>self.rect.y-70 and self.froggo.hitbox.y<self.rect.y+50:
             if self.type == "heart":
                 self.froggo.hp+=25
@@ -101,6 +118,64 @@ class Talk(pygame.sprite.Sprite):
 
         pygame.draw.rect(self.screen,COLOUR_UI_BG,text_rectangle2.inflate(300,200))
         self.screen.blit(text_surface2,text_rectangle2)
+        pass  # You can implement sprite updates here if needed
+
+            
+class Froga(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.screen = pygame.display.get_surface()
+        self.font = pygame.font.Font(FONT, FONT_SIZE)
+        WHITE = (255, 255, 255)
+        self.UI = True
+        self.froggo=None
+        self.wait = 0
+        self.say = "Hello"
+        self.image = pygame.image.load("../img/froggo/frogga.png").convert_alpha()  # Load image with transparency
+        self.rect = self.image.get_rect()  # Get the rectangle bounding the sprite
+        self.graphic=self.image
+
+    def update(self):
+        if self.froggo.hitbox.x>self.rect.x-250 and self.froggo.hitbox.x<self.rect.x+270 and self.froggo.hitbox.y>self.rect.y-270 and self.froggo.hitbox.y<self.rect.y+250:
+            self.wait+=1
+            texter = ["Hello","How are you?","Nice day today.","Aren't you tired?","The mushrooms are restless.","I've planted these flowers myeself.","Are you gonna stay with me a while?", "I used to be an adventurer like you...","The island on the right seems scary.","It might rain tomorrow.","Is everything okay?","Good luck on your journey!","Take care.","You look well.","I'm always here for you.","I can hear the Wolves howling in the distance."]
+            if self.wait>=110:
+                self.say = texter[random.randint(0,len(texter)-1)]
+                self.wait=0
+            
+            text_surface2 = self.font.render(self.say,False,COLOUR_TEXT)
+            x= WIDTH/2 + self.rect.x - self.froggo.hitbox.x + 35
+            y= HEIGHT/2 + self.rect.y - self.froggo.hitbox.y + 25
+            text_rectangle2 = text_surface2.get_rect(topleft = (x,y+38))
+
+            pygame.draw.rect(self.screen,COLOUR_UI_BG,text_rectangle2.inflate(30,25))
+            self.screen.blit(text_surface2,text_rectangle2)
+        pass  # You can implement sprite updates here if needed
+
+            
+class Shield(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.UI = True
+        self.currentHealth = 0
+        self.froggo=None
+        self.wait = 0
+        self.image = pygame.image.load("../img/weapons/shield.png").convert_alpha()  # Load image with transparency
+        self.rect = self.image.get_rect()  # Get the rectangle bounding the sprite
+        self.graphic=self.image
+
+    def update(self):
+        self.rect.topleft = [self.froggo.rect.topleft[0]+30,self.froggo.rect.topleft[1]+30]
+        self.wait+=1
+        self.froggo.hp = self.currentHealth
+        if self.wait>160:
+            if self.wait//5 % 2 == 0:
+                self.image = pygame.image.load("../img/empty.png").convert_alpha() 
+            else:
+                self.image = pygame.image.load("../img/weapons/shield.png").convert_alpha() 
+            self.graphic = self.image
+            if self.wait>220:
+                self.kill()
         pass  # You can implement sprite updates here if needed
 
             

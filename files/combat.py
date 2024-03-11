@@ -1,5 +1,6 @@
 import pygame
 from settings import *
+from elements import *
 
 class Weapon(pygame.sprite.Sprite):
     def __init__(self,label,froggo):
@@ -54,3 +55,12 @@ class Spells:
             froggo.hp = min(froggo.hp + strength,froggo.stats['hp'])
             self.animation_maker.create_elements('heal',froggo.rect.center,label)
             self.sound_heal.play()
+
+    def shield(self, mana_cost, froggo):
+        if(froggo.mana >= mana_cost):
+            if(froggo.coins >= 1):
+                froggo.coins -= 1
+                shield = Shield()
+                shield.froggo = froggo
+                shield.currentHealth=froggo.hp
+                all_sprites.add(shield)

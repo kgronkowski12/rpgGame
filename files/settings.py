@@ -58,7 +58,7 @@ INFO_WEAPONS = {
 INFO_SPELLS = {
     'energy_ball': {'strength': 25,'mana_cost': 25,'graphic':'../img/elements/ball/ball.png'},
     'heal': {'strength': 30,'mana_cost': 15,'graphic':'../img/elements/heal/heal.png'},
-    'shield': {'strength': 30,'mana_cost': 15,'graphic':'../img/elements/heal/heal.png'},
+    'shield': {'strength': 30,'mana_cost': 15,'graphic':'../img/weapons/shieldIcon.png'},
 }
 
 ## funkcje do importowania:

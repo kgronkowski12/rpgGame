@@ -15,7 +15,8 @@ class Froggo(pygame.sprite.Sprite):
         self.waitTime = 0
 
         self.coins=5
-
+        
+        self.setup = 0
         self.import_froggo()
         self.status = 'down'
         self.frame_index = 0
@@ -119,6 +120,13 @@ class Froggo(pygame.sprite.Sprite):
 
 
     def froggo_input(self):
+        if(self.setup==0):
+            self.setup=1
+            print(self.rect.topleft)
+            froga = Froga()
+            froga.rect.topleft = [1660,1800]
+            froga.froggo = self
+            all_sprites.add(froga)
         coinCount = self.coins
 
         x = 1045
@@ -179,7 +187,6 @@ class Froggo(pygame.sprite.Sprite):
                 else:
                     self.weapon_index = 0
                 self.weapon = list(INFO_WEAPONS.keys())[self.weapon_index]
-
 
             if keys[pygame.K_d] and self.switch_spells:
                 self.switch_spells = False
