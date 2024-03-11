@@ -135,6 +135,9 @@ class World:
 
         self.froggo.xp += amount
         self.froggo.score += amount
+        self.froggo.monster_count += 1
+        if self.froggo.monster_count == 51:
+            self.froggo.score += 3000
 
 
 
