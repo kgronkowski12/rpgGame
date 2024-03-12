@@ -6,7 +6,7 @@ from world import *
 import random
 
 class Monster(pygame.sprite.Sprite):
-    def __init__(self,monster_name,position,label,obstacle_sprites,damage_froggo,trigger_death_elements,add_xp):
+    def __init__(self,monster_name,position,label,obstacle_sprites,lava_sprites,water_sprites,damage_froggo,trigger_death_elements,add_xp):
         super().__init__(label)
         self.UI = False
         self.category = 'monster' #typ jest po to
@@ -30,6 +30,9 @@ class Monster(pygame.sprite.Sprite):
         self.obstacle_sprites = obstacle_sprites
         self.direction = pygame.math.Vector2()
 
+        self.lava_sprites = lava_sprites
+        self.water_sprites = water_sprites
+
 
         #statystyki
         self.monster_name = monster_name
@@ -42,6 +45,10 @@ class Monster(pygame.sprite.Sprite):
         self.range_attack= monster_info['range_attack']
         self.range_notice= monster_info['range_notice']
         self.attack_type= monster_info['attack_type']
+
+
+        self.additional_stats = {'swamp':1}
+        self.swamp = self.additional_stats['swamp']
 
         #interakcje z graczem
         self.can_attack = True
@@ -82,9 +89,9 @@ class Monster(pygame.sprite.Sprite):
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize() #aby prędkość nie była podwójna przy trzymaniu dwóch kierunków
             #jednocześnie np. dół i prawo
-        self.hitbox.x += self.direction.x * speed
+        self.hitbox.x += self.direction.x * (speed * self.swamp)
         self.collision('horizontal')
-        self.hitbox.y += self.direction.y * speed
+        self.hitbox.y += self.direction.y * (speed * self.swamp)
         self.collision('vertical')
         self.rect.center = self.hitbox.center
 
@@ -103,6 +110,20 @@ class Monster(pygame.sprite.Sprite):
                         self.hitbox.bottom = sprite.rect.top
                     if self.direction.y < 0:
                         self.hitbox.top = sprite.rect.bottom
+
+        for sprite in self.lava_sprites:
+            if sprite.hitbox.colliderect(self.hitbox):
+                self.hp -= 0.1
+
+        for sprite in self.water_sprites:
+            if sprite.hitbox.colliderect(self.hitbox):
+                self.swamp -= 0.006
+            if self.swamp <= 0.1:
+                self.swamp = 0.1
+            if self.swamp >= 1:
+                self.swamp = 1
+            if self.swamp < 1:
+                self.swamp += 0.0001
 
     def wave_value(self):
         value = sin(pygame.time.get_ticks())
