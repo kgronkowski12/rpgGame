@@ -43,7 +43,7 @@ FROGGO_MAX_LEVEL = {'hp':500,'mana':200,'attack':15,'spells':15,"speed":15}
 #pushback to odleglosc na jaka są odrzuceni gdy gracz ich zaatakuje
 INFO_MONSTER = {
 	'bear_dog': {'hp': 100, 'damage':20, 'xp':200,'attack_type': 'bite', 'attack_sound':'../sound/attacks/bear_dog.wav', 'range_notice': 450, 'range_attack': 70, 'speed': 6, 'pushback': 300},
-	'mushroom': {'hp': 100, 'damage':10, 'xp':150,'attack_type': 'cut', 'attack_sound':'../sound/attacks/mushroom.wav', 'range_notice': 400 , 'range_attack': 90, 'speed': 4, 'pushback': 200},
+	'mushroom': {'hp': 100, 'damage':10, 'xp':150,'attack_type': 'cut', 'attack_sound':'../sound/attacks/mushroom.wav', 'range_notice': 400 , 'range_attack': 90, 'speed': 5, 'pushback': 200},
 	'skeletor': {'hp': 85, 'damage':6, 'xp':125,'attack_type': 'bone', 'attack_sound':'../sound/attacks/skeletor.wav', 'range_notice': 360, 'range_attack': 85, 'speed': 5, 'pushback': 50}}
 
 
