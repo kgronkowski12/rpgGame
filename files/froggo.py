@@ -4,7 +4,7 @@ from math import sin
 import datetime
 from elements import *
 class Froggo(pygame.sprite.Sprite):
-    def __init__(self,position,label,obstacle_sprites,create_attack,destroy_attack,create_spells):
+    def __init__(self,position,label,obstacle_sprites,water_sprites,lava_sprites,swamp_sprites,teleporter_1_sprite,teleporter_2_sprite,teleporter_3_sprite,create_attack,destroy_attack,create_spells):
         super().__init__(label)
         self.UI = False
         self.graphic = pygame.image.load('../img/froggo/down/down_0.png')
@@ -14,8 +14,8 @@ class Froggo(pygame.sprite.Sprite):
         self.talking = 0
         self.waitTime = 0
 
-        self.coins=5
-        
+        self.coins=5        
+
         self.setup = 0
         self.import_froggo()
         self.status = 'down'
@@ -29,6 +29,14 @@ class Froggo(pygame.sprite.Sprite):
         self.time_attack = None
         self.create_attack = create_attack
         self.obstacle_sprites = obstacle_sprites
+        self.water_sprites = water_sprites
+        self.lava_sprites = lava_sprites
+        self.swamp_sprites = swamp_sprites
+        self.teleporter_1_sprite = teleporter_1_sprite
+        self.teleporter_2_sprite = teleporter_2_sprite
+        self.teleporter_3_sprite = teleporter_3_sprite
+
+
 
         #bronie
         self.create_attack = create_attack
@@ -56,6 +64,9 @@ class Froggo(pygame.sprite.Sprite):
         self.score = 0
         self.monster_count = 0
         self.speed = self.stats['speed']
+
+        self.additional_stats = {'swamp':1}
+        self.swamp = self.additional_stats['swamp']
 
         #timer zapisywania wyniku
         self.switch_score = True
@@ -89,9 +100,9 @@ class Froggo(pygame.sprite.Sprite):
 
 
     def move(self,speed):
-        self.hitbox.x += self.direction.x * speed
+        self.hitbox.x += self.direction.x * (speed * self.swamp)
         self.collision('horizontal')
-        self.hitbox.y += self.direction.y * speed
+        self.hitbox.y += self.direction.y * (speed * self.swamp)
         self.collision('vertical')
         self.rect.center = self.hitbox.center
 
@@ -110,6 +121,41 @@ class Froggo(pygame.sprite.Sprite):
                         self.hitbox.bottom = sprite.rect.top
                     if self.direction.y < 0:
                         self.hitbox.top = sprite.rect.bottom
+            
+            #efekty mapy
+        for sprite in self.water_sprites:
+            if sprite.hitbox.colliderect(self.hitbox):
+                self.swamp -= 0.006
+            if self.swamp <= 0.1:
+                self.swamp = 0.1
+            if self.swamp >= 1:
+                self.swamp = 1
+            if self.swamp < 1:
+                self.swamp += 0.0001
+      
+
+        for sprite in self.swamp_sprites:
+            if sprite.hitbox.colliderect(self.hitbox):
+                self.mana -= 0.1
+            
+        for sprite in self.lava_sprites:
+            if sprite.hitbox.colliderect(self.hitbox):
+                self.hp -= 0.1
+
+
+        for sprite in self.teleporter_1_sprite:
+            if sprite.hitbox.colliderect(self.hitbox):
+                self.hitbox.x = 1000
+                self.hitbox.y = 1300
+        for sprite in self.teleporter_2_sprite:
+            if sprite.hitbox.colliderect(self.hitbox):
+                self.hitbox.x = 3000
+                self.hitbox.y = 2050
+        for sprite in self.teleporter_3_sprite:
+            if sprite.hitbox.colliderect(self.hitbox):
+                self.hitbox.x = 1500
+                self.hitbox.y = 2300
+
 
     def wave_value(self):
         if sin(pygame.time.get_ticks()) >= 0: 
