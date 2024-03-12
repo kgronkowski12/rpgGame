@@ -30,6 +30,15 @@ class World:
         #przygotowanie grupy sprite'ow
         self.visable_sprites = SortByY()
 
+        #sprite efektów mapy
+        self.water_sprites = pygame.sprite.Group()
+        self.lava_sprites = pygame.sprite.Group()
+        self.swamp_sprites = pygame.sprite.Group()
+
+        self.teleporter_1_sprite = pygame.sprite.Group()
+        self.teleporter_2_sprite = pygame.sprite.Group()
+        self.teleporter_3_sprite = pygame.sprite.Group()
+
         #sprite ataku
         self.current_attack_sprite = None
         self.obstacle_sprites = pygame.sprite.Group()
@@ -52,13 +61,19 @@ class World:
             'world_wall': csv_import('../map/map__Wall.csv'),
             'flowers': csv_import('../map/map__Flowers.csv'),
             'object': csv_import('../map/map__Objects.csv'),
-            'entities': csv_import('../map/map__Characters.csv')
-
+            'entities': csv_import('../map/map__Characters.csv'),
+            'lava': csv_import('../map/map__Lava.csv'),
+            'water': csv_import('../map/map__Water.csv'),
+            'swamp': csv_import('../map/map__Swamp.csv'),
+            'teleport_1': csv_import('../map/teleport/map__Teleport1.csv'),
+            'teleport_2': csv_import('../map/teleport/map__Teleport2.csv'),
+            'teleport_3': csv_import('../map/teleport/map__Teleport3.csv')
         }
 
         graphics = {
             'flowers': folder_import('../img/flowers'),
-            'objects': folder_import('../img/objects')
+            'objects': folder_import('../img/objects'),
+            'teleporter': folder_import('../img/teleport')
         }
 
         #type = world_wall, layout = csv file
@@ -71,6 +86,27 @@ class World:
                         y = index_OF_row * TILESIZE
                         if type == 'world_wall':
                             Tile((x,y),[self.obstacle_sprites],'invisible') #self.visable_sprites jako 1 argument sprawi ze granice będą widoczne jako czarne pola
+
+
+                        if type == "lava":
+                            Tile((x,y),[self.lava_sprites],'invisible')
+                        if type == "water":
+                            Tile((x,y),[self.water_sprites],'invisible')
+                        if type == "swamp":
+                            Tile((x,y),[self.swamp_sprites],'invisible')
+
+
+                        if type == "teleport_1":
+                            random_surface = choice(graphics['teleporter'])
+                            Tile((x,y),[self.visable_sprites,self.teleporter_1_sprite], 'teleport_1',random_surface)
+                        if type == "teleport_2":
+                            random_surface = choice(graphics['teleporter'])
+                            Tile((x,y),[self.visable_sprites,self.teleporter_2_sprite], 'teleport_2',random_surface)
+                        if type == "teleport_3":
+                            random_surface = choice(graphics['teleporter'])
+                            Tile((x,y),[self.visable_sprites,self.teleporter_3_sprite], 'teleport_3',random_surface)                                              
+
+
                         if type == 'flowers':
                             randomize_flowers = choice(graphics['flowers'])
                             Tile((x,y), [self.visable_sprites,self.obstacle_sprites,self.destroyable_sprites], 'flowers',randomize_flowers)
@@ -79,7 +115,7 @@ class World:
                             Tile((x,y),[self.visable_sprites,self.obstacle_sprites],'object',surface)
                         if type == 'entities':#1 skeletor,2 grzybol, 3 pso niedzwiedz
                             if column == '0':
-                                self.froggo = Froggo((x,y), [self.visable_sprites], self.obstacle_sprites, self.attack, self.kill_weapon_sprite, self.create_spells)
+                                self.froggo = Froggo((x,y), [self.visable_sprites], self.obstacle_sprites, self.water_sprites,self.lava_sprites,self.swamp_sprites,self.teleporter_1_sprite,self.teleporter_2_sprite,self.teleporter_3_sprite,self.attack, self.kill_weapon_sprite, self.create_spells)
                             else:
                                 if column == '1': 
                                     monster_name = 'skeletor'
@@ -88,7 +124,7 @@ class World:
                                 elif column == '3': 
                                     monster_name = 'bear_dog'
                                     #grupy 'sprite'ów' do jakich należą wrogowie
-                                Monster(monster_name,(x,y),[self.visable_sprites,self.destroyable_sprites], self.obstacle_sprites, self.damage_froggo, self.trigger_death_elements, self.add_score_xp)
+                                Monster(monster_name,(x,y),[self.visable_sprites,self.destroyable_sprites], self.obstacle_sprites, self.lava_sprites,  self.water_sprites,self.damage_froggo, self.trigger_death_elements, self.add_score_xp)
                                 #create attack bez () bo nie -> call a pass function
                                 #froggo idzie do visable sprites a potem dostaje info o obstacle sprites tylko do kolizji
 
