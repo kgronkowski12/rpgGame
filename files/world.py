@@ -123,6 +123,8 @@ class World:
                                     monster_name = 'mushroom'
                                 elif column == '3': 
                                     monster_name = 'bear_dog'
+                                elif column == '4': 
+                                    monster_name = 'mimic'
                                     #grupy 'sprite'ów' do jakich należą wrogowie
                                 Monster(monster_name,(x,y),[self.visable_sprites,self.destroyable_sprites], self.obstacle_sprites, self.lava_sprites,  self.water_sprites,self.damage_froggo, self.trigger_death_elements, self.add_score_xp)
                                 #create attack bez () bo nie -> call a pass function

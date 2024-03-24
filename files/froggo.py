@@ -3,6 +3,14 @@ from settings import *
 from math import sin
 import datetime
 from elements import *
+from reportlab.lib.colors import *
+from reportlab.lib.pagesizes import LETTER
+from reportlab.lib.units import inch
+from reportlab.pdfgen.canvas import Canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.lib.utils import ImageReader
+
 class Froggo(pygame.sprite.Sprite):
     def __init__(self,position,label,obstacle_sprites,water_sprites,lava_sprites,swamp_sprites,teleporter_1_sprite,teleporter_2_sprite,teleporter_3_sprite,create_attack,destroy_attack,create_spells):
         super().__init__(label)
@@ -174,6 +182,9 @@ class Froggo(pygame.sprite.Sprite):
             froga.rect.topleft = [1660,1800]
             froga.froggo = self
             all_sprites.add(froga)
+            chest = Chest()
+            chest.rect.topleft = [2760,1800]
+            all_sprites.add(chest)
         coinCount = self.coins
 
         x = 1045
@@ -298,8 +309,20 @@ class Froggo(pygame.sprite.Sprite):
                     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     self.switch_score = False
                     self.time_score = pygame.time.get_ticks()
-                    with open("../list_of_scores.txt", "a") as file: 
-                        file.write("Date: "+ str(now)+'\n' + "score: "+str(int(self.score))+'\n\n')
+                    canvas = Canvas("cert"+str(self.time_score)+".pdf", pagesize=LETTER)
+                    pdfmetrics.registerFont(TTFont('minecraft', '../img/font/Minecraft.ttf'))
+                    canvas.setFont('minecraft', 36)
+                    
+                    canvas.setFillColor(red)
+                    canvas.drawString(1 * inch, 10 * inch, "Froggo's adventure")
+                    canvas.setFont("Times-Roman", 18)
+                    canvas.setFillColor(black)
+                    canvas.drawString(1 * inch, 9 * inch,"Date: "+ str(now))
+                    canvas.drawString(1 * inch, 8.5 * inch,"Score reached: "+str(int(self.score)))
+                    paths = ["../img/froggo/down_idle/idle_down.png","../img/enemies/mimic/move/0.png","../img/enemies/mushroom/idle/0.png","../img/enemies/bear_dog/idle/0.png","../img/enemies/skeletor/idle/0.png"]
+                    rand = random.randint(0,4)
+                    canvas.drawImage(paths[rand], 5 * inch, 8.5 * inch, mask = "auto")
+                    canvas.save()
 
 
 

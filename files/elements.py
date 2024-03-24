@@ -14,6 +14,7 @@ class AnimationMaker:
             'mushroom': folder_import('../img/elements/mushroom'),
             'skeletor': folder_import('../img/elements/skeletor'),
             'flowers': folder_import('../img/elements/leaf'),
+            'mimic': folder_import('../img/enemies/mimic/idle'),
             #magia
             'energy_ball': folder_import('../img/elements/ball/frames'),
             'heal': folder_import('../img/elements/heal/frames')           
@@ -42,53 +43,6 @@ class Elements(pygame.sprite.Sprite):
             self.graphic = self.frame_sequence[int(self.current_index)]
             
 from settings import *
-class Drop(pygame.sprite.Sprite):
-    def __init__(self,typer):
-        super().__init__()
-        WHITE = (255, 255, 255)
-        self.UI = False
-        self.froggo=None
-        self.type=typer
-        self.wait=0
-        if self.type == "heart":
-            self.image = pygame.image.load("../img/other/heart.png").convert_alpha()  # Load image with transparency
-        if self.type == "mana":
-            self.image = pygame.image.load("../img/other/manaREG.png").convert_alpha() 
-        if self.type == "coin":
-            self.image = pygame.image.load("../img/other/coin.png").convert_alpha() 
-        self.image = pygame.transform.scale(self.image, (40, 40)) 
-        self.rect = self.image.get_rect()  # Get the rectangle bounding the sprite
-        self.graphic=self.image
-
-    def update(self):
-        self.wait+=1
-        if self.wait>=50:
-            if self.wait//5 % 2 == 0:
-                self.image = pygame.image.load("../img/empty.png").convert_alpha() 
-            else:
-                if self.type == "heart":
-                    self.image = pygame.image.load("../img/other/heart.png").convert_alpha()  # Load image with transparency
-                if self.type == "mana":
-                    self.image = pygame.image.load("../img/other/manaREG.png").convert_alpha() 
-                if self.type == "coin":
-                    self.image = pygame.image.load("../img/other/coin.png").convert_alpha() 
-            if self.wait>=85:
-                self.kill()
-            self.image = pygame.transform.scale(self.image, (40, 40)) 
-            self.graphic = self.image
-        if self.froggo.hitbox.x>self.rect.x-50 and self.froggo.hitbox.x<self.rect.x+70 and self.froggo.hitbox.y>self.rect.y-70 and self.froggo.hitbox.y<self.rect.y+50:
-            if self.type == "heart":
-                self.froggo.hp+=25
-                if self.froggo.hp>self.froggo.stats['hp']:
-                    self.froggo.hp = self.froggo.stats['hp']
-            if self.type == "mana":
-                self.froggo.mana+=25
-                if self.froggo.mana>self.froggo.stats['mana']:
-                    self.froggo.mana = self.froggo.stats['mana']
-            if self.type == "coin":
-                self.froggo.coins+=1
-            self.kill()
-        pass  # You can implement sprite updates here if needed
 
 class Talk(pygame.sprite.Sprite):
     def __init__(self):
@@ -178,4 +132,82 @@ class Shield(pygame.sprite.Sprite):
                 self.kill()
         pass  # You can implement sprite updates here if needed
 
+class Drop(pygame.sprite.Sprite):
+    def __init__(self,typer):
+        super().__init__()
+        WHITE = (255, 255, 255)
+        self.UI = False
+        self.froggo=None
+        self.type=typer
+        self.wait=0
+        if self.type == "heart":
+            self.image = pygame.image.load("../img/other/heart.png").convert_alpha()  # Load image with transparency
+        if self.type == "mana":
+            self.image = pygame.image.load("../img/other/manaREG.png").convert_alpha() 
+        if self.type == "coin":
+            self.image = pygame.image.load("../img/other/coin.png").convert_alpha() 
+        self.image = pygame.transform.scale(self.image, (40, 40)) 
+        self.rect = self.image.get_rect()  # Get the rectangle bounding the sprite
+        self.graphic=self.image
+
+    def update(self):
+        self.wait+=1
+        if self.wait>=65:
+            if self.wait//5 % 2 == 0:
+                self.image = pygame.image.load("../img/empty.png").convert_alpha() 
+            else:
+                if self.type == "heart":
+                    self.image = pygame.image.load("../img/other/heart.png").convert_alpha()  # Load image with transparency
+                if self.type == "mana":
+                    self.image = pygame.image.load("../img/other/manaREG.png").convert_alpha() 
+                if self.type == "coin":
+                    self.image = pygame.image.load("../img/other/coin.png").convert_alpha() 
+            if self.wait>=130:
+                self.kill()
+            self.image = pygame.transform.scale(self.image, (40, 40)) 
+            self.graphic = self.image
+        if self.froggo.hitbox.x>self.rect.x-50 and self.froggo.hitbox.x<self.rect.x+70 and self.froggo.hitbox.y>self.rect.y-70 and self.froggo.hitbox.y<self.rect.y+50:
+            if self.type == "heart":
+                self.froggo.hp+=25
+                if self.froggo.hp>self.froggo.stats['hp']:
+                    self.froggo.hp = self.froggo.stats['hp']
+            if self.type == "mana":
+                self.froggo.mana+=25
+                if self.froggo.mana>self.froggo.stats['mana']:
+                    self.froggo.mana = self.froggo.stats['mana']
+            if self.type == "coin":
+                self.froggo.coins+=1
+            self.kill()
+        pass  # You can implement sprite updates here if needed
+
+class Chest(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        WHITE = (255, 255, 255)
+        self.UI = False
+        self.froggo=None
+        self.image = pygame.image.load("../img/enemies/mimic/idle/0.png").convert_alpha() 
+        #self.image = pygame.transform.scale(self.image, (40, 40)) 
+        self.rect = self.image.get_rect()  # Get the rectangle bounding the sprite
+        self.graphic=self.image
+
+    def update(self):
+        if self.froggo.hitbox.x>self.rect.x-100 and self.froggo.hitbox.x<self.rect.x+120 and self.froggo.hitbox.y>self.rect.y-120 and self.froggo.hitbox.y<self.rect.y+100:
+            player_image = pygame.image.load("../img/flowers/flower_3.png").convert_alpha()  # Load image with transparency
+            player_sprite =     Drop("coin")
+            player_sprite.rect.topleft=self.rect.topleft
+            player_sprite.image = player_image
+            all_sprites.add(player_sprite)
+
+            player_sprite =     Drop("coin")
+            player_sprite.rect.topleft=(self.rect.x+30,self.rect.y+20)
+            player_sprite.image = player_image
+            all_sprites.add(player_sprite)
+
+            player_sprite =     Drop("coin")
+            player_sprite.rect.topleft=(self.rect.x+60,self.rect.y-20)
+            player_sprite.image = player_image
+            all_sprites.add(player_sprite)
+            self.kill()
+        pass  # You can implement sprite updates here if needed
             

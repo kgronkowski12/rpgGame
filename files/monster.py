@@ -168,6 +168,8 @@ class Monster(pygame.sprite.Sprite):
                     say = "Fungi fury!"
                 if self.monster_name=="skeletor":
                     say = "Bony barrage!"
+                if self.monster_name=="mimic":
+                    say = "Gotchya!"
                 text_surface2 = self.font.render(say,False,COLOUR_TEXT)
                 x= WIDTH/2 + self.hitbox.x - froggo.hitbox.x + 35
                 y= HEIGHT/2 + self.hitbox.y - froggo.hitbox.y + 25
