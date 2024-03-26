@@ -145,6 +145,8 @@ class Froggo(pygame.sprite.Sprite):
         for sprite in self.swamp_sprites:
             if sprite.hitbox.colliderect(self.hitbox):
                 self.mana -= 0.1
+                if self.mana <= 0:
+                    self.mana = 0
             
         for sprite in self.lava_sprites:
             if sprite.hitbox.colliderect(self.hitbox):
